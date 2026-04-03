@@ -26,6 +26,17 @@
 
 ### 1. Install
 
+**Via NPM:**
+```bash
+npm install -g xknow-cli
+```
+
+**Via PNPM:**
+```bash
+pnpm add -g xknow-cli
+```
+
+**For Development:**
 ```bash
 pnpm install && pnpm link --global
 ```
