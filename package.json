@@ -1,0 +1,14 @@
+{
+  "name": "xiaoxi-knowledge",
+  "version": "0.1.0",
+  "description": "小溪的知识管理系统 - LLM Knowledge Base",
+  "scripts": {
+    "compile": "node src/scripts/compile.js",
+    "query": "node src/scripts/query.js",
+    "lint": "node src/scripts/lint.js",
+    "sync": "node src/scripts/sync.js"
+  },
+  "keywords": ["knowledge-base", "llm", "obsidian", "wiki"],
+  "author": "adminlove520",
+  "license": "MIT"
+}
