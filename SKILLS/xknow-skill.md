@@ -53,14 +53,20 @@ xknow-cli compile --force          # Force full recompile
 xknow-cli compile --source notes   # Compile notes only
 ```
 
-### query - Intelligent Q&A
+### query - Intelligent Q&A (Synthesis)
 ```bash
-xknow-cli query "What are the key design choices in my projects?"
+xknow-cli query "What are the key design choices?" --format slides --save
+```
+*Tip: Use `--save` to persist the synthesis back into your KB.*
+
+### search - Fast Local Search
+```bash
+xknow-cli search "vector-db"  # Fast offline keyword lookup
 ```
 
 ### lint - AI Health Check
 ```bash
-xknow-cli lint  # AI audit for orphans, duplicates, and new article candidates
+xknow-cli lint  # AI audit. Generates LIBRARIAN_REPORT.md in your Wiki.
 ```
 
 ### doctor - Setup Diagnosis

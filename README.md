@@ -75,13 +75,19 @@ Drop your raw Markdown, PDF (via extract), or text files into `~/Obsidian/Xknow-
 xknow-cli compile
 ```
 
-### 5. Ask Anything
+### 5. Ask Anything (AI Synthesis)
 
 ```bash
-xknow-cli query "What are the core design patterns used in my recent projects?"
+xknow-cli query "What are the core design patterns used in my recent projects?" --format slides --save
 ```
 
-### 6. Diagnose Setup
+### 6. Fast Search (Local/Offline)
+
+```bash
+xknow-cli search "LLM"
+```
+
+### 7. Diagnose Setup
 
 ```bash
 xknow-cli doctor

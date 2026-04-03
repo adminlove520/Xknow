@@ -69,8 +69,8 @@ function saveConfig(config) {
  */
 function checkObsidianCli() {
   try {
-    const result = execSync('obsidian --version', { encoding: 'utf8' });
-    return { available: true, version: result.trim() };
+    const result = execSync('obsidian --version', { encoding: 'utf8' }).trim();
+    return { available: true, version: result };
   } catch (e) {
     return { available: false, version: null };
   }
@@ -129,6 +129,7 @@ program
   .option('-r, --raw <path>', 'Path to Raw data directory')
   .option('-l, --list', 'List current configuration')
   .option('--init', 'Initialize Obsidian Vault')
+  .option('--show-openclaw', 'Show OpenClaw raw configuration (debugging)')
   .action((options) => {
     const config = loadConfig();
 
@@ -153,6 +154,17 @@ program
         console.log(chalk.gray('   export OPENAI_API_KEY=your_key'));
         console.log(chalk.gray('   export OPENAI_BASE_URL=https://...'));
         console.log(chalk.gray('   export OPENAI_MODEL=gpt-4o\n'));
+      }
+      return;
+    }
+
+    if (options.showOpenClaw) {
+      const openClawPath = path.join(os.homedir(), '.openclaw', 'openclaw.json');
+      if (fs.existsSync(openClawPath)) {
+        console.log(chalk.bold.cyan(`\n📄 OpenClaw Config (${openClawPath}):\n`));
+        console.log(fs.readFileSync(openClawPath, 'utf8'));
+      } else {
+        console.log(chalk.red('\n✗ OpenClaw config not found.\n'));
       }
       return;
     }
@@ -206,6 +218,17 @@ program
     const config = loadConfig();
     const { query } = await import('../lib/query.js');
     await query(config, question, options);
+  });
+
+// search command (Local/Fast)
+program
+  .command('search')
+  .description('Fast local search for keywords in the Wiki')
+  .argument('<keyword>', 'Keyword to search for')
+  .action(async (keyword) => {
+    const config = loadConfig();
+    const { search } = await import('../lib/search.js');
+    await search(config, keyword);
   });
 
 // lint command
