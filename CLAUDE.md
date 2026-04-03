@@ -1,4 +1,4 @@
-# CLAUDE.md - xiaoxi-knowledge
+# CLAUDE.md - Xknow
 
 > 小溪的知识管理系统 - 基于 Karpathy LLM Knowledge Bases 理念
 
@@ -13,75 +13,79 @@
 ## 目录结构
 
 ```
-xiaoxi-knowledge/
+Xknow/
 ├── bin/
-│   └── xknowledge.js     # CLI 入口
+│   └── xknow.js          # CLI 入口
 ├── lib/
-│   ├── config.js          # 配置管理
+│   ├── config.js         # 配置管理（从 OpenClaw 读取 API）
 │   ├── compile.js        # 编译 raw → wiki
 │   ├── query.js          # Q&A 查询
 │   ├── lint.js           # 健康检查
-│   └── sync.js           # 同步到 Obsidian
-├── wiki/                 # Obsidian Vault (公开上传)
-│   └── ...               # 编译后的知识
-└── raw/                  # 原始数据 (本地，不上传!)
-    ├── articles/
-    ├── papers/
-    └── notes/
+│   └── sync.js           # 同步
+├── SKILLS/
+│   └── xknow-skill.md    # OpenClaw Skill
+├── scripts/              # 辅助脚本
+└── CLAUDE.md             # AI 助手指南
 ```
 
-## 隐私原则
+## Obsidian Vault 位置
 
-**绝对不上传**：
-- memory/ - 个人日志和决策
-- MEMORY.md, SOUL.md, USER.md, TOOLS.md - 身份和密钥信息
-- raw/ - 原始数据
-- .env - 任何密钥
-
-**只上传**：
-- wiki/ - 编译后的知识
-- src/ - CLI 代码
+```
+~/Obsidian/Xknow/         # Wiki 在这里
+~/.xknowledgerc           # 配置在这里
+```
 
 ## CLI 命令
 
 ```bash
+# 安装
+pnpm link --global
+
 # 配置
-xknow config --list              # 查看配置
-xknow config --provider openai   # 设置 LLM
+xknow config --list       # 查看配置
+xknow config --wiki ~/path  # 设置 Wiki 路径
+
+# 初始化
+xknow init               # 创建 Obsidian Vault
 
 # 编译
 xknow compile                    # 编译所有
-xknow compile --source articles  # 只编译文章
+xknow compile --source notes    # 只编译笔记
 
 # Q&A
 xknow query "什么是 SuperDreams?"
 
 # 健康检查
 xknow lint
-
-# 同步
-xknow sync --obsidian ~/Documents/Obsidian/my-vault
 ```
 
-## 设计原则
+## LLM API
 
-1. **LLM Write, Human Review** - LLM 负责写 wiki，人类审核
-2. **Incremental Compile** - 增量编译，不是全量重写
-3. **Backlinks** - 笔记之间自动建立双向链接
-4. **沉淀** - 每次 Q&A 输出都回写到 wiki
-5. **隐私优先** - 敏感数据绝不上传
+**自动从 OpenClaw 读取**：
+- API Key：从 `~/.openclaw/openclaw.json` 读取
+- 模型：从 `agents.defaults.model` 读取
 
-## Karpathy 方法论参考
+## 隐私原则
+
+**绝不上传**：
+- ~/Obsidian/Xknow/ - Wiki 数据
+- ~/.xknowledgerc - 配置
+
+**只上传 Git**：
+- CLI/Skill 代码
+- 不包含任何数据
+
+## Karpathy 方法论
 
 ```
 raw/ → LLM 增量编译 → wiki/
                       ↓
                 Q&A 探索
                       ↓
-              输出 + 沉淀 → wiki/ (增强)
+              输出 + 沉淀 → wiki/
 ```
 
 关键洞察：
 - "You rarely ever write or edit the wiki manually, it's the domain of the LLM"
-- wiki 够大(~100文章/400K words)后直接问，不用 RAG
+- wiki 够大后直接问，不用 RAG
 - LLM 会自动维护索引和摘要

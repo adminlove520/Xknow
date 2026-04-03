@@ -13,8 +13,8 @@ const program = new Command();
 const CONFIG_PATH = path.join(os.homedir(), '.xknowledgerc');
 
 // 默认路径
-const DEFAULT_WIKI_PATH = '~/Obsidian/xiaoxi-knowledge';
-const DEFAULT_RAW_PATH = '~/Obsidian/xiaoxi-knowledge/raw';
+const DEFAULT_WIKI_PATH = '~/Obsidian/Xknow';
+const DEFAULT_RAW_PATH = '~/Obsidian/Xknow/raw';
 
 // 加载配置
 function loadConfig() {
@@ -43,7 +43,7 @@ function loadConfig() {
 
     if (openaiKey) config.apiKey = openaiKey;
     if (model) config.llmModel = model;
-    config.llmProvider = 'openai';  // OpenClaw 用的是 OpenAI 兼容 API
+    config.llmProvider = 'openai';
   }
 
   return config;
@@ -52,6 +52,27 @@ function loadConfig() {
 // 保存配置
 function saveConfig(config) {
   fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2));
+}
+
+// 检查 Obsidian CLI 是否可用
+function checkObsidianCli() {
+  // Obsidian CLI 在 v1.12.4+ 内置
+  try {
+    const result = execSync('obsidian --version', { encoding: 'utf8' });
+    return { available: true, version: result.trim() };
+  } catch (e) {
+    return { available: false, version: null };
+  }
+}
+
+// 简单的 execSync
+function execSync(cmd, opts = {}) {
+  const { exec } = require('child_process');
+  const output = require('child_process').execSync(cmd, {
+    encoding: opts.encoding || null,
+    stdio: opts.stdio || null
+  });
+  return output;
 }
 
 // 检查/创建 Obsidian Vault
@@ -69,7 +90,7 @@ function ensureObsidianVault(vaultPath) {
     }
     
     // 创建 wiki 索引
-    const indexContent = `# xiaoxi-knowledge Wiki
+    const indexContent = `# Xknow Wiki
 
 ## 目录
 
@@ -79,12 +100,24 @@ function ensureObsidianVault(vaultPath) {
 - [[Life/]] - 生活记录
 
 ---
-*由 xknowledge CLI 管理*
+*由 Xknow CLI 管理*
 `;
     fs.writeFileSync(path.join(expanded, 'INDEX.md'), indexContent);
     
     console.log(chalk.green('✅ Obsidian Vault 创建完成！'));
     console.log(chalk.gray(`   请用 Obsidian 打开: ${expanded}`));
+    
+    // 尝试用 Obsidian CLI 打开
+    const obsidianCli = checkObsidianCli();
+    if (obsidianCli.available) {
+      try {
+        console.log(chalk.gray('\n   正在尝试用 Obsidian CLI 打开...'));
+        execSync(`obsidian open "${expanded}"`);
+      } catch (e) {
+        // 忽略
+      }
+    }
+    
     return true;
   }
   
@@ -92,29 +125,9 @@ function ensureObsidianVault(vaultPath) {
   return false;
 }
 
-// 检查 Obsidian 是否安装
-function checkObsidianInstalled() {
-  const paths = [
-    // Windows
-    path.join(os.homedir(), 'AppData', 'Local', 'Obsidian', 'Obsidian.exe'),
-    // Mac
-    '/Applications/Obsidian.app',
-    // Linux
-    '/usr/bin/obsidian'
-  ];
-
-  for (const p of paths) {
-    if (fs.existsSync(p)) {
-      return { installed: true, path: p };
-    }
-  }
-
-  return { installed: false, path: null };
-}
-
 program
   .name('xknow')
-  .description('xiaoxi-knowledge CLI - LLM Knowledge Base Management')
+  .description('Xknow CLI - 小溪的知识管理工具')
   .version('0.1.0');
 
 // config 命令
@@ -129,18 +142,15 @@ program
     const config = loadConfig();
 
     if (options.list) {
-      const obsidian = checkObsidianInstalled();
+      const obsidianCli = checkObsidianCli();
       console.log(chalk.bold.green('\n🛠 当前生效配置:'));
       console.log(chalk.gray('--------------------------------'));
       console.log(`${chalk.yellow('Wiki Path:  ')} ${expandHome(config.wikiPath)}`);
       console.log(`${chalk.yellow('Raw Path:   ')} ${expandHome(config.rawPath)}`);
       console.log(`${chalk.yellow('LLM:        ')} ${config.llmProvider} / ${config.llmModel}`);
-      console.log(`${chalk.yellow('API Key:   ')} ${config.apiKey ? '****' + config.apiKey.slice(-4) : '(未设置)'}`);
+      console.log(`${chalk.yellow('API Key:   ')} ${config.apiKey ? '****' + config.apiKey.slice(-4) : '(自动从 OpenClaw 读取)'}`);
       console.log(chalk.gray('--------------------------------'));
-      console.log(`${chalk.yellow('Obsidian:   ')} ${obsidian.installed ? chalk.green('✓ 已安装') : chalk.red('✗ 未安装')}`);
-      if (obsidian.installed) {
-        console.log(chalk.gray(`   ${obsidian.path}`));
-      }
+      console.log(`${chalk.yellow('Obsidian:   ')} ${obsidianCli.available ? chalk.green('✓ CLI 可用 v' + obsidianCli.version) : chalk.red('✗ CLI 不可用')}`);
       console.log(chalk.gray('--------------------------------\n'));
       return;
     }

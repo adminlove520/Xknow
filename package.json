@@ -1,10 +1,10 @@
 {
-  "name": "xknowledge",
+  "name": "xknow",
   "version": "0.1.0",
-  "description": "xiaoxi-knowledge CLI - LLM Knowledge Base Management",
+  "description": "Xknow CLI - 小溪的知识管理工具，基于 Karpathy LLM Knowledge Bases 理念",
   "main": "index.js",
   "bin": {
-    "xknow": "bin/xknowledge.js"
+    "xknow": "bin/xknow.js"
   },
   "scripts": {
     "compile": "node lib/compile.js",
@@ -12,7 +12,7 @@
     "lint": "node lib/lint.js",
     "sync": "node lib/sync.js"
   },
-  "keywords": ["knowledge-base", "llm", "obsidian", "wiki"],
+  "keywords": ["knowledge-base", "llm", "obsidian", "wiki", "xknow"],
   "author": "adminlove520",
   "license": "MIT",
   "dependencies": {

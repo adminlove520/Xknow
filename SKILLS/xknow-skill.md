@@ -1,19 +1,17 @@
 ---
-name: xknowledge
-description: "小溪的知识管理 CLI - 基于 Karpathy LLM Knowledge Bases 理念。用于编译 wiki、Q&A 查询、健康检查。触发词：知识管理、wiki、compile、lint、xknow"
+name: xknow
+description: "Xknow CLI - 小溪的知识管理工具。用于编译 wiki、Q&A 查询、健康检查。触发词：知识管理、wiki、compile、lint、xknow"
 ---
 
-# xknowledge CLI - 小溪知识管理
+# Xknow CLI - 小溪知识管理
 
 > 基于 Karpathy LLM Knowledge Bases 理念
-> 
-> **核心**：LLM 编译 wiki → Q&A → 沉淀增强
 
 ## 配置
 
 ### 1. LLM API（自动从 OpenClaw 读取）
 
-xknow 会自动读取 OpenClaw 的 API key 和模型：
+xknow 会自动从 OpenClaw 读取：
 - API Key：从 `~/.openclaw/openclaw.json` 读取
 - 模型：从 `agents.defaults.model` 读取
 
@@ -27,11 +25,15 @@ xknow init
 xknow config --list
 ```
 
-**Vault 位置**：`~/Obsidian/xiaoxi-knowledge/`
+**Vault 位置**：`~/Obsidian/Xknow/`
+
+**Obsidian CLI**：
+- v1.12.4+ 内置官方 CLI
+- 可用 `obsidian open <vault>` 直接打开 Vault
 
 **目录结构**：
 ```
-~/Obsidian/xiaoxi-knowledge/
+~/Obsidian/Xknow/
 ├── raw/               # 原始数据
 │   ├── articles/      # 文章
 │   ├── papers/       # 论文
@@ -40,7 +42,7 @@ xknow config --list
 ├── INDEX.md          # Wiki 索引
 ├── Claude/           # Claude 架构学习
 ├── Agent/            # Agent 设计
-├── Engineering/     # 工程实践
+├── Engineering/      # 工程实践
 └── Life/            # 生活记录
 ```
 
@@ -55,13 +57,14 @@ xknow init --force     # 强制重新创建
 ### config - 配置
 ```bash
 xknow config --list     # 查看配置（包含 OpenClaw 信息）
+xknow config --wiki ~/path  # 设置 Wiki 路径
 ```
 
 ### compile - 编译
 ```bash
 xknow compile                  # 编译所有 raw → wiki
-xknow compile --source notes   # 只编译笔记
-xknow compile --source articles # 只编译文章
+xknow compile --source notes  # 只编译笔记
+xknow compile --source articles
 ```
 
 ### query - Q&A
@@ -105,7 +108,7 @@ raw/ → LLM 增量编译 → wiki/
 ```
 用户：我今天学了 LLM Agents 的 memory 系统
 小溪：
-1. 写笔记到 ~/Obsidian/xiaoxi-knowledge/raw/notes/
+1. 写笔记到 ~/Obsidian/Xknow/raw/notes/
 2. xknow compile --source notes → LLM 编译到 wiki
 3. 建立 backlinks 和索引
 ```
@@ -124,6 +127,6 @@ raw/ → LLM 增量编译 → wiki/
 
 ## 隐私原则
 
-- **数据在本地**：~/Obsidian/xiaoxi-knowledge/
+- **数据在本地**：~/Obsidian/Xknow/
 - **Git 不存储数据**：只存 CLI/Skill 代码
 - **API Key 来自 OpenClaw**：不额外配置

@@ -1,4 +1,4 @@
-# xiaoxi-knowledge 🧠
+# Xknow 🧠
 
 > 小溪的知识管理 CLI/Skill - 基于 Karpathy LLM Knowledge Bases 理念
 
@@ -7,24 +7,24 @@
 ## 目录结构
 
 ```
-xiaoxi-knowledge/          # ← Git 仓库只存这些
-├── SKILLS/                # OpenClaw Skill
-│   └── xknowledge-skill.md
-├── bin/                   # CLI 入口
-│   └── xknowledge.js
-├── lib/                   # 核心功能
+Xknow/                    # ← Git 仓库只存这些
+├── SKILLS/               # OpenClaw Skill
+│   └── xknow-skill.md
+├── bin/                  # CLI 入口
+│   └── xknow.js
+├── lib/                  # 核心功能
 │   ├── config.js
 │   ├── compile.js
 │   ├── query.js
 │   ├── lint.js
 │   └── sync.js
-├── scripts/               # 辅助脚本
-├── CLAUDE.md              # AI 助手指南
+├── scripts/              # 辅助脚本
+├── CLAUDE.md             # AI 助手指南
 ├── README.md
 └── package.json
 
 # 本地数据（不在 git 里！）
-~/Obsidian/xiaoxi-knowledge/  # wiki 在这里
+~/Obsidian/Xknow/            # wiki 在这里
 ~/.xknowledgerc              # 配置在这里
 ```
 
@@ -44,6 +44,9 @@ pnpm link --global
 # 配置
 xknow config --list
 
+# 初始化 Obsidian Vault
+xknow init
+
 # 编译 wiki
 xknow compile --source notes
 
@@ -52,9 +55,6 @@ xknow query "问题"
 
 # 健康检查
 xknow lint
-
-# 同步
-xknow sync
 ```
 
 ## Karpathy 方法论
