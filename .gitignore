@@ -1,61 +1,16 @@
-# === 隐私数据 - 不上传 ===
+# === 本地配置（不上传）===
+.xknowledgerc
 
-# 记忆和个人数据
-memory/
-MEMORY.md
-SOUL.md
-USER.md
-NOW.md
-HEARTBEAT.md
-
-# 工具配置和密钥
-TOOLS.md
-*.env
-.env.local
-.env.production
-
-# OpenClaw 工作区文件
-.agignore
-*.log
-
-# 操作系统文件
-.DS_Store
-Thumbs.db
-
-# === Wiki 本地数据 ===
-
-# Raw 数据（本地，不上传）
-raw/
-*.md.raw
-
-# Obsidian 本地缓存
-.obsidian/
-.trash/
-
-# === 开发文件 ===
-
-# 依赖
+# === 依赖 ===
 node_modules/
 .pnpm-store/
 
-# 构建产物
+# === 开发文件 ===
 dist/
 build/
-
-# 日志
 *.log
-npm-debug.log*
 
-# 临时文件
+# === 临时文件 ===
 *.tmp
 *.swp
-*.swo
-
-# IDE
-.vscode/
-.idea/
-*.iml
-
-# 测试覆盖率
-coverage/
-.nyc_output/
+.DS_Store

@@ -1,63 +1,70 @@
 # xiaoxi-knowledge 🧠
 
-> 小溪的知识管理系统 - LLM Knowledge Base
-> 
-> 基于 Karpathy 的 LLM Knowledge Bases 理念
+> 小溪的知识管理 CLI/Skill - 基于 Karpathy LLM Knowledge Bases 理念
 
-## 核心理念
-
-- **raw data** → LLM 编译成 **wiki (.md)**
-- **Obsidian** 作为 IDE 前端查看
-- LLM 负责写和维护 wiki，人类负责审核
-- wiki 够大后直接 Q&A，不需要 RAG
+**目的**：给小溪用的知识管理工具，不是数据存储仓库
 
 ## 目录结构
 
 ```
-xiaoxi-knowledge/
-├── CLAUDE.md           # 项目说明
-├── README.md            # 本文件
-│
-├── src/                # 源代码 (CLI/Scripts)
-│   ├── cli/            # 命令行工具
-│   └── scripts/         # 辅助脚本
-│
-├── wiki/               # LLM 编译的 wiki (Obsidian 库)
-│   ├── 00-General/     # 通用知识
-│   ├── 01-AI/          # AI 相关
-│   │   ├── Claude/     # Claude 架构学习
-│   │   └── Agent/      # Agent 设计
-│   ├── 02-Engineering/ # 工程实践
-│   └── 03-Life/       # 生活记录
-│
-└── raw/                # 原始数据 (待编译)
-    ├── articles/       # 文章
-    ├── papers/         # 论文
-    ├── repos/          # 代码仓库
-    └── notes/          # 随手记
+xiaoxi-knowledge/          # ← Git 仓库只存这些
+├── SKILLS/                # OpenClaw Skill
+│   └── xknowledge-skill.md
+├── bin/                   # CLI 入口
+│   └── xknowledge.js
+├── lib/                   # 核心功能
+│   ├── config.js
+│   ├── compile.js
+│   ├── query.js
+│   ├── lint.js
+│   └── sync.js
+├── scripts/               # 辅助脚本
+├── CLAUDE.md              # AI 助手指南
+├── README.md
+└── package.json
+
+# 本地数据（不在 git 里！）
+~/Obsidian/xiaoxi-knowledge/  # wiki 在这里
+~/.xknowledgerc              # 配置在这里
 ```
 
 ## 设计原则
 
-1. **LLM Write, Human Review** — LLM 负责写和维护，人类审核
-2. **Incremental Compile** — 增量编译，不是全量重写
-3. **Backlinks** — 笔记之间自动建立双向链接
-4. **Incremental Enhance** — 每次 Q&A 输出都沉淀回 wiki
+1. **本地优先** - 数据在本地 Obsidian，不上传 git
+2. **LLM 主导** - LLM 负责写 wiki，人类辅助
+3. **增量编译** - 不是全量重写
+4. **隐私优先** - 敏感数据绝不上传
 
 ## CLI 命令
 
 ```bash
+# 安装
+pnpm link --global
+
+# 配置
+xknow config --list
+
 # 编译 wiki
-npm run compile
+xknow compile --source notes
 
 # Q&A
-npm run query -- "问题"
+xknow query "问题"
 
 # 健康检查
-npm run lint
+xknow lint
 
-# 同步到 Obsidian
-npm run sync
+# 同步
+xknow sync
+```
+
+## Karpathy 方法论
+
+```
+raw/ → LLM 增量编译 → wiki/
+                      ↓
+                Q&A 探索
+                      ↓
+              输出 + 沉淀 → wiki/
 ```
 
 ## License
