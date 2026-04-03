@@ -213,6 +213,16 @@ program
     await lint(config);
   });
 
+// doctor command
+program
+  .command('doctor')
+  .description('Diagnose environment and configuration')
+  .action(async () => {
+    const config = loadConfig();
+    const { doctor } = await import('../lib/doctor.js');
+    await doctor(config);
+  });
+
 // init command
 program
   .command('init')

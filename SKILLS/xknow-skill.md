@@ -63,6 +63,11 @@ xknow-cli query "What are the key design choices in my projects?"
 xknow-cli lint  # AI audit for orphans, duplicates, and new article candidates
 ```
 
+### doctor - Setup Diagnosis
+```bash
+xknow-cli doctor  # Diagnose environment, network, and config
+```
+
 ## Karpathy Methodology Implementation
 
 | Design Pillar | Implementation Details |

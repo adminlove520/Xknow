@@ -81,6 +81,12 @@ xknow-cli compile
 xknow-cli query "What are the core design patterns used in my recent projects?"
 ```
 
+### 6. Diagnose Setup
+
+```bash
+xknow-cli doctor
+```
+
 ## Karpathy Methodology
 
 According to Andrej Karpathy's [Twitter insights](https://x.com/karpathy/status/2039805659525644595):
