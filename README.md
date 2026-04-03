@@ -9,8 +9,35 @@
 - 🚀 **Incremental Compilation**: Only processes new or modified raw data using MD5 hashing.
 - 🔍 **Context-Aware Q&A**: Leverages the full KB context for deep queries (beyond standard RAG limitations).
 - 🛡️ **AI Health Check**: Automatically audits your Wiki for orphans, duplicates, and missing connections.
+- 🔌 **MCP Support**: Native Model Context Protocol server support for integration with AI agents (Claude Desktop, OpenClaw, etc.).
 - 🖇️ **OpenClaw Integration**: Automatically bridges your existing OpenClaw credentials and model settings (found in `~/.openclaw/openclaw.json`).
 - 📂 **Obsidian Friendly**: Uses Obsidian as the IDE/frontend for your knowledge. Your data stays local.
+
+## Model Context Protocol (MCP) Integration
+
+Xknow-CLI acts as an MCP server, allowing AI agents to directly use your knowledge base as a set of tools.
+
+### Setup in Claude Desktop
+
+Add this to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "xknow": {
+      "command": "node",
+      "args": ["/PATH/TO/Xknow/bin/xknow-mcp.js"]
+    }
+  }
+}
+```
+
+### Available MCP Tools
+- `xknow_query`: Intelligent Q&A on your Wiki.
+- `xknow_search`: Fast local keyword lookup.
+- `xknow_compile`: Transform raw chaos into ordered knowledge.
+- `xknow_ingest`: Add new sources to your knowledge base.
+- `xknow_lint`: Perform an AI librarian health audit.
 
 ## Configuration & Credentials
 
