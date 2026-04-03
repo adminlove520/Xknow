@@ -9,10 +9,28 @@
 - 🚀 **Incremental Compilation**: Only processes new or modified raw data using MD5 hashing.
 - 🔍 **Context-Aware Q&A**: Leverages the full KB context for deep queries (beyond standard RAG limitations).
 - 🛡️ **AI Health Check**: Automatically audits your Wiki for orphans, duplicates, and missing connections.
-- 🖇️ **OpenClaw Integration**: Automatically bridges your existing OpenClaw credentials and model settings.
+- 🖇️ **OpenClaw Integration**: Automatically bridges your existing OpenClaw credentials and model settings (found in `~/.openclaw/openclaw.json`).
 - 📂 **Obsidian Friendly**: Uses Obsidian as the IDE/frontend for your knowledge. Your data stays local.
 
-## Directory Structure
+## Configuration & Credentials
+
+**Xknow-CLI** is designed to work with **zero configuration** for OpenClaw users. It automatically looks for your API keys and models in:
+`~/.openclaw/openclaw.json`
+
+### Manual Setup (Without OpenClaw)
+
+If you're not an OpenClaw user, you can set the following environment variables:
+
+```bash
+export OPENAI_API_KEY="your-api-key"
+export OPENAI_BASE_URL="https://api.openai.com/v1"
+export OPENAI_MODEL="gpt-4o"
+```
+
+You can verify your configuration at any time by running:
+```bash
+xknow-cli config --list
+```
 
 ```text
 ~/Obsidian/Xknow-Wiki/       # Your Knowledge Base (Local)

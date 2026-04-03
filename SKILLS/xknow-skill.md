@@ -12,8 +12,10 @@ description: "Xknow-CLI - AI-First Knowledge Management for OpenClaw Lobsters. U
 ### 1. LLM API (OpenClaw Bridge)
 
 xknow-cli automatically bridges your existing OpenClaw configuration:
-- API Key: Loaded from `~/.openclaw/openclaw.json`
-- Model: Loaded from `agents.defaults.model` (e.g., GPT-4o, Claude 3.5 Sonnet)
+- **API Key**: Loaded from `~/.openclaw/agents/main/agent/auth_profiles.json`
+- **Model**: Loaded from `agents.defaults.model` (e.g., minimax/MiniMax-M2.7)
+
+> **Note**: Auth profiles are stored per-agent. For the main agent, check `~/.openclaw/agents/main/agent/auth_profiles.json`.
 
 ### 2. Obsidian Vault
 

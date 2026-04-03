@@ -129,15 +129,26 @@ program
 
     if (options.list) {
       const obsidianCli = checkObsidianCli();
+      const openClawPath = path.join(os.homedir(), '.openclaw', 'openclaw.json');
+      const hasOpenClaw = fs.existsSync(openClawPath);
+
       console.log(chalk.bold.green('\n🛠 Current Configuration:'));
       console.log(chalk.gray('--------------------------------'));
       console.log(`${chalk.yellow('Wiki Path:  ')} ${expandHome(config.wikiPath)}`);
       console.log(`${chalk.yellow('Raw Path:   ')} ${expandHome(config.rawPath)}`);
       console.log(`${chalk.yellow('LLM:        ')} ${config.llmProvider} / ${config.llmModel}`);
-      console.log(`${chalk.yellow('API Key:   ')} ${config.apiKey ? '****' + config.apiKey.slice(-4) : '(Auto-loaded from OpenClaw)'}`);
+      console.log(`${chalk.yellow('API Key:   ')} ${config.apiKey ? '****' + config.apiKey.slice(-4) : (hasOpenClaw ? chalk.green('Auto-loaded from OpenClaw') : chalk.red('Not Found'))}`);
       console.log(chalk.gray('--------------------------------'));
+      console.log(`${chalk.yellow('OpenClaw:   ')} ${hasOpenClaw ? chalk.green('Found (' + openClawPath + ')') : chalk.yellow('Not found (manual setup required via env vars)')}`);
       console.log(`${chalk.yellow('Obsidian:   ')} ${obsidianCli.available ? chalk.green('✓ CLI available v' + obsidianCli.version) : chalk.red('✗ CLI not available')}`);
       console.log(chalk.gray('--------------------------------\n'));
+      
+      if (!hasOpenClaw && !process.env.OPENAI_API_KEY) {
+        console.log(chalk.yellow('💡 To set up manually, export environment variables:'));
+        console.log(chalk.gray('   export OPENAI_API_KEY=your_key'));
+        console.log(chalk.gray('   export OPENAI_BASE_URL=https://...'));
+        console.log(chalk.gray('   export OPENAI_MODEL=gpt-4o\n'));
+      }
       return;
     }
 
