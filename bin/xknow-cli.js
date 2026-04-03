@@ -5,18 +5,21 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
+import { execSync } from 'child_process';
 import { expandHome, getOpenClawApiKey, getOpenClawModel } from '../lib/config.js';
 
 const program = new Command();
 
-// 配置路径
-const CONFIG_PATH = path.join(os.homedir(), '.xknowledgerc');
+// Config path
+const CONFIG_PATH = path.join(os.homedir(), '.xknow-clirc');
 
-// 默认路径
-const DEFAULT_WIKI_PATH = '~/Obsidian/Xknow';
-const DEFAULT_RAW_PATH = '~/Obsidian/Xknow/raw';
+// Default paths
+const DEFAULT_WIKI_PATH = '~/Obsidian/Xknow-Wiki';
+const DEFAULT_RAW_PATH = '~/Obsidian/Xknow-Wiki/raw';
 
-// 加载配置
+/**
+ * Load configuration
+ */
 function loadConfig() {
   let config = {
     wikiPath: DEFAULT_WIKI_PATH,
@@ -26,17 +29,17 @@ function loadConfig() {
     apiKey: null
   };
 
-  // 1. 加载文件配置
+  // 1. Load file config
   if (fs.existsSync(CONFIG_PATH)) {
     try {
       const fileConfig = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
       config = { ...config, ...fileConfig };
     } catch (e) {
-      console.error(chalk.yellow('⚠ 配置文件解析失败，使用默认值'));
+      console.error(chalk.yellow('⚠ Failed to parse config file, using defaults.'));
     }
   }
 
-  // 2. 自动从 OpenClaw 获取 LLM 配置
+  // 2. Automatically get LLM config from OpenClaw
   if (config.llmProvider === 'auto' || config.llmModel === 'auto') {
     const openaiKey = getOpenClawApiKey();
     const model = getOpenClawModel();
@@ -49,14 +52,17 @@ function loadConfig() {
   return config;
 }
 
-// 保存配置
+/**
+ * Save configuration
+ */
 function saveConfig(config) {
   fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2));
 }
 
-// 检查 Obsidian CLI 是否可用
+/**
+ * Check if Obsidian CLI is available
+ */
 function checkObsidianCli() {
-  // Obsidian CLI 在 v1.12.4+ 内置
   try {
     const result = execSync('obsidian --version', { encoding: 'utf8' });
     return { available: true, version: result.trim() };
@@ -65,92 +71,72 @@ function checkObsidianCli() {
   }
 }
 
-// 简单的 execSync
-function execSync(cmd, opts = {}) {
-  const { exec } = require('child_process');
-  const output = require('child_process').execSync(cmd, {
-    encoding: opts.encoding || null,
-    stdio: opts.stdio || null
-  });
-  return output;
-}
-
-// 检查/创建 Obsidian Vault
+/**
+ * Ensure Obsidian Vault exists
+ */
 function ensureObsidianVault(vaultPath) {
   const expanded = expandHome(vaultPath);
   
   if (!fs.existsSync(expanded)) {
-    console.log(chalk.cyan(`\n📁 创建 Obsidian Vault: ${expanded}`));
+    console.log(chalk.cyan(`\n📁 Creating Obsidian Vault: ${expanded}`));
     fs.mkdirSync(expanded, { recursive: true });
     
-    // 创建基础目录结构
+    // Create base directory structure
     const dirs = ['raw/articles', 'raw/papers', 'raw/repos', 'raw/notes'];
     for (const d of dirs) {
       fs.mkdirSync(path.join(expanded, d), { recursive: true });
     }
     
-    // 创建 wiki 索引
-    const indexContent = `# Xknow Wiki
-
-## 目录
-
-- [[Claude/]] - Claude 架构学习
-- [[Agent/]] - Agent 设计
-- [[Engineering/]] - 工程实践
-- [[Life/]] - 生活记录
-
----
-*由 Xknow CLI 管理*
-`;
+    // Create wiki index
+    const indexContent = `# Xknow Wiki\n\n## Table of Contents\n\n- [[INDEX]]\n\n--- \n*Managed by Xknow-CLI*\n`;
     fs.writeFileSync(path.join(expanded, 'INDEX.md'), indexContent);
     
-    console.log(chalk.green('✅ Obsidian Vault 创建完成！'));
-    console.log(chalk.gray(`   请用 Obsidian 打开: ${expanded}`));
+    console.log(chalk.green('✅ Obsidian Vault created successfully!'));
+    console.log(chalk.gray(`   Please open it in Obsidian: ${expanded}`));
     
-    // 尝试用 Obsidian CLI 打开
     const obsidianCli = checkObsidianCli();
     if (obsidianCli.available) {
       try {
-        console.log(chalk.gray('\n   正在尝试用 Obsidian CLI 打开...'));
+        console.log(chalk.gray('\n   Trying to open with Obsidian CLI...'));
         execSync(`obsidian open "${expanded}"`);
       } catch (e) {
-        // 忽略
+        // Ignore
       }
     }
     
     return true;
   }
   
-  console.log(chalk.green(`\n✅ Obsidian Vault 已存在: ${expanded}`));
+  console.log(chalk.green(`\n✅ Obsidian Vault already exists: ${expanded}`));
   return false;
 }
 
 program
-  .name('xknow')
-  .description('Xknow CLI - 小溪的知识管理工具')
-  .version('0.1.0');
+  .name('xknow-cli')
+  .description('Xknow-CLI - AI-First Knowledge Management Tool for OpenClaw Users, based on Karpathy LLM Knowledge Bases concept')
+  .version('1.0.0');
 
-// config 命令
+// config command
 program
   .command('config')
-  .description('配置或查看当前设置')
-  .option('-w, --wiki <path>', 'Wiki 目录路径')
-  .option('-r, --raw <path>', 'Raw 数据目录路径')
-  .option('-l, --list', '查看当前配置')
-  .option('--init', '初始化 Obsidian Vault')
+  .description('Configure or view current settings')
+  .option('-w, --wiki <path>', 'Path to Wiki directory')
+  .option('-r, --raw <path>', 'Path to Raw data directory')
+  .option('-l, --list', 'List current configuration')
+  .option('--init', 'Initialize Obsidian Vault')
   .action((options) => {
     const config = loadConfig();
 
     if (options.list) {
       const obsidianCli = checkObsidianCli();
-      console.log(chalk.bold.green('\n🛠 当前生效配置:'));
+      console.log(chalk.bold.green('\n🛠 Current Configuration:'));
       console.log(chalk.gray('--------------------------------'));
       console.log(`${chalk.yellow('Wiki Path:  ')} ${expandHome(config.wikiPath)}`);
       console.log(`${chalk.yellow('Raw Path:   ')} ${expandHome(config.rawPath)}`);
       console.log(`${chalk.yellow('LLM:        ')} ${config.llmProvider} / ${config.llmModel}`);
-      console.log(`${chalk.yellow('API Key:   ')} ${config.apiKey ? '****' + config.apiKey.slice(-4) : '(自动从 OpenClaw 读取)'}`);
+      console.log(`${chalk.yellow('API Key:   ')} ${config.apiKey ? '****' + config.apiKey.slice(-4) : '(Auto-loaded from OpenClaw)'}`);
       console.log(chalk.gray('--------------------------------'));
-      console.log(`${chalk.yellow('Obsidian:   ')} ${obsidianCli.available ? chalk.green('✓ CLI 可用 v' + obsidianCli.version) : chalk.red('✗ CLI 不可用')}`);
+      console.log(`${chalk.yellow('Obsidian:   ')} ${obsidianCli.available ? chalk.green('✓ CLI available v' + obsidianCli.version) : chalk.red('✗ CLI not available')}`);
       console.log(chalk.gray('--------------------------------\n'));
       return;
     }
@@ -164,55 +150,68 @@ program
     if (options.raw) config.rawPath = options.raw;
 
     saveConfig(config);
-    console.log(chalk.green('✔ 配置已更新:'));
+    console.log(chalk.green('✔ Configuration updated:'));
     console.log(chalk.cyan(`  Wiki Path: ${config.wikiPath}`));
     console.log(chalk.cyan(`  Raw Path: ${config.rawPath}`));
   });
 
-// compile 命令
+// ingest command
+program
+  .command('ingest')
+  .description('Ingest source content to raw/')
+  .argument('<source>', 'Source URL or local file path')
+  .option('-c, --category <category>', 'Category (articles|papers|notes|repos)', 'notes')
+  .action(async (source, options) => {
+    const config = loadConfig();
+    const { ingest } = await import('../lib/ingest.js');
+    await ingest(config, source, options);
+  });
+
+// compile command
 program
   .command('compile')
-  .description('编译 raw/ 数据到 wiki/')
-  .option('-s, --source <source>', '指定来源 (articles|papers|notes|repos)')
+  .description('Compile raw data into wiki pages (Dual-Layer: Refs & Concepts)')
+  .option('-s, --source <source>', 'Specify source category')
+  .option('-f, --force', 'Force recompile all files')
   .action(async (options) => {
     const config = loadConfig();
     const { compile } = await import('../lib/compile.js');
-    compile(config, options);
+    await compile(config, options);
   });
 
-// query 命令
+// query command
 program
   .command('query')
-  .description('基于 wiki 进行 Q&A')
-  .argument('<question>', '要查询的问题')
-  .action(async (question) => {
+  .description('Intelligent Q&A based on wiki context')
+  .argument('<question>', 'Question to ask')
+  .option('-f, --format <format>', 'Output format (markdown|slides|mermaid)', 'markdown')
+  .option('-s, --save', 'Save the result as a new concept article')
+  .action(async (question, options) => {
     const config = loadConfig();
     const { query } = await import('../lib/query.js');
-    query(config, question);
+    await query(config, question, options);
   });
 
-// lint 命令
+// lint command
 program
   .command('lint')
-  .description('Wiki 健康检查')
+  .description('AI Librarian Health Check & Gap Analysis')
   .action(async () => {
     const config = loadConfig();
     const { lint } = await import('../lib/lint.js');
-    lint(config);
+    await lint(config);
   });
 
-// init 命令
+// init command
 program
   .command('init')
-  .description('初始化 Obsidian Vault')
-  .option('-f, --force', '强制重新创建')
+  .description('Initialize Obsidian Vault')
+  .option('-f, --force', 'Force re-create')
   .action(async (options) => {
     const config = loadConfig();
-    
     if (options.force) {
-      console.log(chalk.yellow('\n⚠ 强制重新创建（将清空现有数据！）'));
+      console.log(chalk.yellow('\n⚠ Force re-creating (existing data will be kept but structure verified)!'));
     }
-    
     ensureObsidianVault(config.wikiPath);
   });
 

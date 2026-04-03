@@ -1,23 +1,34 @@
 {
-  "name": "xknow",
-  "version": "0.1.0",
-  "description": "Xknow CLI - 小溪的知识管理工具，基于 Karpathy LLM Knowledge Bases 理念",
+  "name": "xknow-cli",
+  "version": "1.0.0",
+  "description": "Xknow CLI - AI-First Knowledge Management Tool for OpenClaw Users, based on Karpathy LLM Knowledge Bases concept",
   "main": "index.js",
   "bin": {
-    "xknow": "bin/xknow.js"
+    "xknow-cli": "bin/xknow-cli.js"
   },
   "scripts": {
     "compile": "node lib/compile.js",
     "query": "node lib/query.js",
     "lint": "node lib/lint.js",
-    "sync": "node lib/sync.js"
+    "sync": "node lib/sync.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["knowledge-base", "llm", "obsidian", "wiki", "xknow"],
+  "keywords": [
+    "knowledge-base",
+    "llm",
+    "obsidian",
+    "wiki",
+    "xknow-cli",
+    "karpathy",
+    "openclaw"
+  ],
   "author": "adminlove520",
   "license": "MIT",
   "dependencies": {
     "chalk": "^5.3.0",
     "commander": "^12.0.0",
+    "globby": "^14.0.1",
+    "openai": "^4.29.0",
     "ora": "^8.0.0"
   },
   "engines": {

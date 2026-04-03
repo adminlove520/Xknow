@@ -1,71 +1,70 @@
-# Xknow 🧠
+# Xknow-CLI 🧠
 
-> 小溪的知识管理 CLI/Skill - 基于 Karpathy LLM Knowledge Bases 理念
+> AI-First Knowledge Management for OpenClaw Users - Based on Karpathy LLM Knowledge Bases concept
 
-**目的**：给小溪用的知识管理工具，不是数据存储仓库
+**Xknow-CLI** is an automated knowledge management tool designed for AI agents and their owners. It follows the principle: **"LLM writes and maintains the Wiki, Humans ask and discover."**
 
-## 目录结构
+## Key Features
 
-```
-Xknow/                    # ← Git 仓库只存这些
-├── SKILLS/               # OpenClaw Skill
-│   └── xknow-skill.md
-├── bin/                  # CLI 入口
-│   └── xknow.js
-├── lib/                  # 核心功能
-│   ├── config.js
-│   ├── compile.js
-│   ├── query.js
-│   ├── lint.js
-│   └── sync.js
-├── scripts/              # 辅助脚本
-├── CLAUDE.md             # AI 助手指南
-├── README.md
-└── package.json
+- 🚀 **Incremental Compilation**: Only processes new or modified raw data using MD5 hashing.
+- 🔍 **Context-Aware Q&A**: Leverages the full KB context for deep queries (beyond standard RAG limitations).
+- 🛡️ **AI Health Check**: Automatically audits your Wiki for orphans, duplicates, and missing connections.
+- 🖇️ **OpenClaw Integration**: Automatically bridges your existing OpenClaw credentials and model settings.
+- 📂 **Obsidian Friendly**: Uses Obsidian as the IDE/frontend for your knowledge. Your data stays local.
 
-# 本地数据（不在 git 里！）
-~/Obsidian/Xknow/            # wiki 在这里
-~/.xknowledgerc              # 配置在这里
+## Directory Structure
+
+```text
+~/Obsidian/Xknow-Wiki/       # Your Knowledge Base (Local)
+├── raw/                     # Chaos: Your raw input (articles, papers, notes)
+├── wiki/                    # Order: LLM-compiled structured wiki pages
+├── INDEX.md                 # Global navigation index
+└── .xknow-history.json      # Compilation state & history
 ```
 
-## 设计原则
+## Quick Start
 
-1. **本地优先** - 数据在本地 Obsidian，不上传 git
-2. **LLM 主导** - LLM 负责写 wiki，人类辅助
-3. **增量编译** - 不是全量重写
-4. **隐私优先** - 敏感数据绝不上传
-
-## CLI 命令
+### 1. Install
 
 ```bash
-# 安装
-pnpm link --global
-
-# 配置
-xknow config --list
-
-# 初始化 Obsidian Vault
-xknow init
-
-# 编译 wiki
-xknow compile --source notes
-
-# Q&A
-xknow query "问题"
-
-# 健康检查
-xknow lint
+pnpm install && pnpm link --global
 ```
 
-## Karpathy 方法论
+### 2. Initialize
 
+```bash
+xknow-cli init
 ```
-raw/ → LLM 增量编译 → wiki/
-                      ↓
-                Q&A 探索
-                      ↓
-              输出 + 沉淀 → wiki/
+
+### 3. Feed the Chaos
+
+Drop your raw Markdown, PDF (via extract), or text files into `~/Obsidian/Xknow-Wiki/raw/notes/` (or other subdirs).
+
+### 4. Compile to Order
+
+```bash
+xknow-cli compile
 ```
+
+### 5. Ask Anything
+
+```bash
+xknow-cli query "What are the core design patterns used in my recent projects?"
+```
+
+## Karpathy Methodology
+
+According to Andrej Karpathy's [Twitter insights](https://x.com/karpathy/status/2039805659525644595):
+
+1. **LLM as Editor**: Writing and maintaining the Wiki is the LLM's job, not yours.
+2. **Beyond RAG**: For KBs within 100k tokens, providing the full context to a large LLM outperforms traditional RAG.
+3. **Autonomous Links**: The LLM automatically generates [[Wikilinks]] and back-references between concepts.
+
+## Development
+
+- Built with Node.js 18+ (ES Modules)
+- Uses `commander`, `chalk`, `ora`, `openai`, `globby`
+- CI/CD: Automated NPM release via GitHub Actions on `v*` tag.
 
 ## License
 

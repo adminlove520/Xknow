@@ -1,91 +1,69 @@
-# CLAUDE.md - Xknow
+# CLAUDE.md - Xknow-CLI
 
-> 小溪的知识管理系统 - 基于 Karpathy LLM Knowledge Bases 理念
+> AI-First Knowledge Management for OpenClaw Lobsters - Based on Karpathy LLM Knowledge Bases concept
 
-## 项目背景
+## Project Concept
 
-哥哥想用类似 Karpathy 的方法论建立知识管理系统：
-- **raw data** → LLM 编译成 **wiki (.md)**
-- **Obsidian** 作为 IDE 前端
-- LLM 负责写和维护 wiki，人类很少直接编辑
-- wiki 够大后直接 Q&A，不需要 RAG
+Xknow-CLI is a generic knowledge management system for OpenClaw users:
+- **raw/ (Chaos)** -> LLM Compiles to -> **wiki/ (Order)**
+- **Obsidian** as the primary IDE/frontend.
+- LLM handles writing, maintenance, and inter-document linking.
+- For small KBs (<100k tokens), uses full context for intelligent Q&A (beyond RAG).
 
-## 目录结构
+## Directory Structure
 
-```
-Xknow/
+```text
+Xknow-CLI/
+├── .github/workflows/
+│   └── release.yml        # CI/CD (GitHub Action for NPM release)
 ├── bin/
-│   └── xknow.js          # CLI 入口
+│   └── xknow-cli.js       # CLI Entry
 ├── lib/
-│   ├── config.js         # 配置管理（从 OpenClaw 读取 API）
-│   ├── compile.js        # 编译 raw → wiki
-│   ├── query.js          # Q&A 查询
-│   ├── lint.js           # 健康检查
-│   └── sync.js           # 同步
+│   ├── config.js          # Configuration Management (OpenClaw Bridge)
+│   ├── compile.js         # Incremental Compilation Logic
+│   ├── query.js           # Full Context Q&A
+│   ├── lint.js            # KB Health Check (AI Audit)
+│   ├── llm.js             # LLM API Proxy
+│   └── sync.js            # Sync Logic
 ├── SKILLS/
-│   └── xknow-skill.md    # OpenClaw Skill
-├── scripts/              # 辅助脚本
-└── CLAUDE.md             # AI 助手指南
+│   └── xknow-skill.md     # OpenClaw Skill Definition
+└── CLAUDE.md              # AI Agent Project Guide
 ```
 
-## Obsidian Vault 位置
+## Core Design Principles
 
-```
-~/Obsidian/Xknow/         # Wiki 在这里
-~/.xknowledgerc           # 配置在这里
-```
+1. **Incremental Compilation**: Only re-compiles modified files using MD5 hashes.
+2. **Full Context Querying**: Bypasses traditional RAG by putting full Wiki context into the model's large prompt window.
+3. **OpenClaw Bridge**: Seamlessly loads credentials and models from `~/.openclaw/openclaw.json`.
+4. **Privacy-First**: Knowledge is stored in a local Obsidian Vault, not on GitHub.
 
-## CLI 命令
+## CLI Commands
 
 ```bash
-# 安装
-pnpm link --global
+# Setup
+pnpm install && pnpm link --global
+xknow-cli init
+xknow-cli config --list
 
-# 配置
-xknow config --list       # 查看配置
-xknow config --wiki ~/path  # 设置 Wiki 路径
-
-# 初始化
-xknow init               # 创建 Obsidian Vault
-
-# 编译
-xknow compile                    # 编译所有
-xknow compile --source notes    # 只编译笔记
-
-# Q&A
-xknow query "什么是 SuperDreams?"
-
-# 健康检查
-xknow lint
+# core workflow
+xknow-cli compile          # Compile raw (chaos) to wiki (order)
+xknow-cli query "Question"  # Intelligent Q&A on KB context
+xknow-cli lint             # Audit KB health and connections
 ```
 
-## LLM API
+## Developer Notes
 
-**自动从 OpenClaw 读取**：
-- API Key：从 `~/.openclaw/openclaw.json` 读取
-- 模型：从 `agents.defaults.model` 读取
+- **Language**: Node.js 18+ (ESM).
+- **Core Dependencies**: `commander`, `chalk`, `ora`, `openai`, `globby`.
+- **Release**: Create a Git tag starting with `v*` to trigger automated NPM release.
+- **Config**: Master config in `~/.xknow-clirc`; credentials in `~/.openclaw/openclaw.json`.
 
-## 隐私原则
-
-**绝不上传**：
-- ~/Obsidian/Xknow/ - Wiki 数据
-- ~/.xknowledgerc - 配置
-
-**只上传 Git**：
-- CLI/Skill 代码
-- 不包含任何数据
-
-## Karpathy 方法论
+## Methodology (Karpathy)
 
 ```
-raw/ → LLM 增量编译 → wiki/
-                      ↓
-                Q&A 探索
-                      ↓
-              输出 + 沉淀 → wiki/
+raw/ (chaos) -> LLM Compiler (order) -> wiki/ (structure)
+                               ↓
+                        Intelligent Q&A
+                               ↓
+                        Knowledge Discovery
 ```
-
-关键洞察：
-- "You rarely ever write or edit the wiki manually, it's the domain of the LLM"
-- wiki 够大后直接问，不用 RAG
-- LLM 会自动维护索引和摘要
